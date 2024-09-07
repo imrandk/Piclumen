@@ -7,18 +7,15 @@ function setText(t) {
   const ta = document.querySelector('.n-input__textarea-el');
   if (ta) {
     ta.focus();
-    if (!ta.value) { // If the text area is empty, paste immediately
+    if (!ta.value) {
       ta.value = t;
       ta.dispatchEvent(new Event('input', { bubbles: true }));
     }
   }
 }
 
-// Function to continuously check and paste the text if the box is empty
 function continuouslyPasteText(t) {
-  setInterval(() => {
-    setText(t);
-  }, 1000);
+  setInterval(() => setText(t), 1000);
 }
 
 function handleButtonClickWithDelay() {
@@ -33,13 +30,11 @@ function handleButtonClickWithDelay() {
 }
 
 function checkForButton() {
-  if (document.querySelector('button.btn')) {
-    handleButtonClickWithDelay();
-  }
+  if (document.querySelector('button.btn')) handleButtonClickWithDelay();
 }
 
-const observer = new MutationObserver(mutations => {
-  mutations.forEach(mutation => {
+const observer = new MutationObserver((m) => {
+  m.forEach(() => {
     if (document.querySelector('button.btn')) {
       handleButtonClickWithDelay();
       observer.disconnect();
@@ -50,6 +45,7 @@ const observer = new MutationObserver(mutations => {
 observer.observe(document.body, { childList: true, subtree: true });
 setInterval(checkForButton, 2000);
 checkForButton();
+
 
 
 
