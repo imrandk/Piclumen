@@ -1,0 +1,83 @@
+function copyRelevantText() {
+  const t = document.querySelector('.n-input__textarea-el');
+  return t ? t.value : '';
+}
+
+function setText(t) {
+  const ta = document.querySelector('.n-input__textarea-el');
+  if (ta) {
+    ta.focus();
+    ta.value = '';
+    setTimeout(() => {
+      ta.value = t;
+      ta.dispatchEvent(new Event('input', { bubbles: true }));
+    }, 5000);
+  }
+}
+
+function handleButtonClickWithDelay() {
+  const cText = copyRelevantText();
+  setTimeout(() => {
+    const b = document.querySelector('button.btn');
+    if (b) {
+      b.click();
+      setTimeout(() => setText(cText), 1000);
+    }
+  }, 2000);
+}
+
+function checkForButton() {
+  if (document.querySelector('button.btn')) {
+    handleButtonClickWithDelay();
+  }
+}
+
+const observer = new MutationObserver(mutations => {
+  mutations.forEach(mutation => {
+    if (document.querySelector('button.btn')) {
+      handleButtonClickWithDelay();
+      observer.disconnect();
+    }
+  });
+});
+
+observer.observe(document.body, { childList: true, subtree: true });
+setInterval(checkForButton, 2000);
+checkForButton();
+
+
+
+
+
+
+const downloadedImages = new Set();
+
+const downloadImages = async () => {
+  const images = document.querySelectorAll('div:nth-child(2) > div > .task-item > .grid img');
+
+  for (let i = 0; i < images.length; i++) {
+    const src = images[i].src;
+
+    if (src && !downloadedImages.has(src)) {
+      downloadedImages.add(src);
+
+      try {
+        const res = await fetch(src);
+        const blob = await res.blob();
+        const num = (src.match(/\d+/g) || []).reduce((a, b) => (a.length > b.length ? a : b), `image${i + 1}`);
+        const filename = `${num}.jpg`;
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error(`Error downloading image ${i + 1}:`, err);
+        downloadedImages.delete(src);
+      }
+    }
+  }
+};
+
+setInterval(downloadImages, 5000);
