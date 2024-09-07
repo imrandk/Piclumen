@@ -15,20 +15,19 @@ function setText(t) {
 }
 
 // Function to continuously check and paste the text if the box is empty
-function continuouslyPasteText() {
-  const cText = copyRelevantText(); // Ensure the latest text is copied
+function continuouslyPasteText(t) {
   setInterval(() => {
-    setText(cText);
+    setText(t);
   }, 1000);
 }
 
 function handleButtonClickWithDelay() {
-  const cText = copyRelevantText(); // Copy text before the button click
+  const cText = copyRelevantText();
   setTimeout(() => {
     const b = document.querySelector('button.btn');
     if (b) {
       b.click();
-      setTimeout(() => continuouslyPasteText(), 1000); // Start continuous pasting after clicking
+      setTimeout(() => continuouslyPasteText(cText), 1000);
     }
   }, 2000);
 }
@@ -51,6 +50,7 @@ const observer = new MutationObserver(mutations => {
 observer.observe(document.body, { childList: true, subtree: true });
 setInterval(checkForButton, 2000);
 checkForButton();
+
 
 
 
